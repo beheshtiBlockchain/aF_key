@@ -127,13 +127,6 @@ keys = {hold:{capsLock:false, numLock:false, shift:false, ctrl:false, alt:false}
     //console.log(keys.atOrnot);
      // either ctrl shift or alt were present or absence reported (events are not conflicted) then
     if (ability) {
-        if(chr["char"].length>1){
-            var shrt = chr["char"].substring(1,chr["char"].length);
-            af_Key(shrt,fn);
-            var mono = $.timer(1000, function(){
-                af_Key(shrt,'');
-            })
-        }
         
         if (keys.atOrnot[chr["char"]]) {
             // reset all pressed keys
@@ -166,6 +159,15 @@ keys = {hold:{capsLock:false, numLock:false, shift:false, ctrl:false, alt:false}
 			}
             return false
         }
+	else if(chr["char"].length>1){
+            var shrt = chr["char"].substring(1,chr["char"].length);
+            af_Key(shrt,fn);
+            var mono = $.timer(1000, function(){
+                af_Key(shrt,'');
+            })
+        }
+        
+	
     }
     // key operation is finished
     keys.upinit(event);
