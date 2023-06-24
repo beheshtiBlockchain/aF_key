@@ -40,7 +40,8 @@ keys = {hold:{capsLock:false, numLock:false, shift:false, ctrl:false, alt:false}
         keys.hold[a[2]] = true
     }
     if (key == 17) { // ctrl
-        keys.hold[a[3]] = true
+        keys.hold[a[3]] = true;
+        keys.atOrnot[a[3]] = true;
     }
     if (key == 18) { // alt
         keys.hold[a[4]] = true
@@ -54,6 +55,7 @@ keys = {hold:{capsLock:false, numLock:false, shift:false, ctrl:false, alt:false}
 }, upinit:function (event, type) {// reset function of above function
     var key = event.keyCode ? event.keyCode : event.which ? event.which : event.charCode;
     a = ["capsLock", "numLock", "shift", "ctrl", "alt"];
+    
     if (key == 20) {
         keys.hold[a[0]] = false
     }
@@ -64,7 +66,8 @@ keys = {hold:{capsLock:false, numLock:false, shift:false, ctrl:false, alt:false}
         keys.hold[a[2]] = false
     }
     if (key == 17) {
-        keys.hold[a[3]] = false
+        keys.hold[a[3]] = false;
+        keys.atOrnot[a[3]] = false
     }
     if (key == 18) {
         keys.hold[a[4]] = false
@@ -91,45 +94,47 @@ keys = {hold:{capsLock:false, numLock:false, shift:false, ctrl:false, alt:false}
         arr["ctrlKey"] = match[1] == "ctrl";
         arr["altKey"] = match[1] == "alt" || match[2] == "alt" || match[3] == "alt";
         arr["shiftKey"] = match[1] == "shift" || match[2] == "shift" || match[3] == "shift";
-        arr["char"] = match[4]
+        arr["char"] = match[4];
     } catch (e) {
     }
     return arr
 }, fn:function (event, name, fn) { // event handler function
-    var chr, ability = true, ex = event.excact || true;
+    var chr, ability = true, ex = event.excact || true, a = ["capsLock", "numLock", "shift", "ctrl", "alt"];
     if (event.type == "keydown") {
         keys.init(event)
     }
-    // if there was any name print in in the string variable handle the function
+    // if there was any name print screen in in the string variable handle the function
     if (event.type == "keyup" && name.indexOf("print") >= 0) {
         keys.init(event)
     }
+    
     chr = this.findfn(name);
-    for (var a in{ctrlKey:"", shiftKey:"", altKey:""}) {
+    for (var a in{ctrlKey:"", shiftKey:"", altKey:""}) {// check if all ctrl shift and alt are pressed and by the time confronted conflict break out of loop
         if (chr[a]) {
             // doublecheck ctrl shift and alt(keep tight)
-            ability = event[a.toString()];
+            ability =  keys.hold[a[3]]|| keys.hold[a[4]]|| keys.hold[a[2]];// event[a.toString()]
             if (!event[a.toString()]) {
                 break
             }
             // if there was no(o<|) ctrl shift or alt(loosely programmed)
         } else if (ex) {
-            ability = !event[a.toString()];
+            ability = !(keys.hold[a[3]]|| keys.hold[a[4]]|| keys.hold[a[2]]);// event[a.toString()]
             if (event[a.toString()]) {
                 break
             }
         }
     }
+    //console.log(keys.atOrnot);
      // either ctrl shift or alt were present or absence reported (events are not conflicted) then
     if (ability) {
         if(chr["char"].length>1){
             var shrt = chr["char"].substring(1,chr["char"].length);
-            console.log(shrt)
             af_Key(shrt,fn);
             var mono = $.timer(1000, function(){
                 af_Key(shrt,'');
             })
         }
+        
         if (keys.atOrnot[chr["char"]]) {
             // reset all pressed keys
             for (var b in keys.atOrnot) {
@@ -162,7 +167,6 @@ keys = {hold:{capsLock:false, numLock:false, shift:false, ctrl:false, alt:false}
             return false
         }
     }
-    ;
     // key operation is finished
     keys.upinit(event);
     return
@@ -202,7 +206,6 @@ fireEventup = function (event) {
     for (name in af_key_fns) {
         elem = af_key_fns[name];
 		keys.fn(event, name, elem);
-		
     }
     return
 };
