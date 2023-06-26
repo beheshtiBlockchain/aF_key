@@ -128,6 +128,7 @@ keys = {hold:{capsLock:false, numLock:false, shift:false, ctrl:false, alt:false}
      // either ctrl shift or alt were present or absence reported (events are not conflicted) then
     if (ability) {
         
+        
         if (keys.atOrnot[chr["char"]]) {
             // reset all pressed keys
             for (var b in keys.atOrnot) {
@@ -159,15 +160,14 @@ keys = {hold:{capsLock:false, numLock:false, shift:false, ctrl:false, alt:false}
 			}
             return false
         }
-	else if(chr["char"].length>1){
+        // check for sequence of chars gets hit on a queue
+        else if(chr["char"].length>1 && keys.atOrnot[chr["char"][0]]){
             var shrt = chr["char"].substring(1,chr["char"].length);
             af_Key(shrt,fn);
-            var mono = $.timer(1000, function(){
+            var mono = $.timer(500, function(){
                 af_Key(shrt,'');
             })
         }
-        
-	
     }
     // key operation is finished
     keys.upinit(event);
